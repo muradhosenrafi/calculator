@@ -1,56 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./style.css">
-    
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="A clean, responsive calculator for everyday arithmetic.">
+  <title>Modern Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
 </head>
-
 <body>
+  <main class="container">
+    <section class="calculator" aria-label="Calculator">
+      <header class="calculator-header"><div><span class="eyebrow">EVERYDAY TOOL</span><h1>Calculator</h1></div><span class="status-dot" aria-label="Ready"></span></header>
+      <label class="display-label" for="display">Expression</label>
+      <input id="display" class="display" type="text" inputmode="decimal" autocomplete="off" placeholder="0" aria-label="Calculator display" readonly>
+      <p id="message" class="message" aria-live="polite">Ready when you are.</p>
+      <div class="keypad" id="keypad">
+        <button class="utility" data-action="clear">AC</button><button class="utility" data-action="delete" aria-label="Delete last character">DEL</button><button class="operator" data-value="(">(</button><button class="operator" data-value=")">)</button>
+        <button data-value="7">7</button><button data-value="8">8</button><button data-value="9">9</button><button class="operator" data-value="/">÷</button>
+        <button data-value="4">4</button><button data-value="5">5</button><button data-value="6">6</button><button class="operator" data-value="*">×</button>
+        <button data-value="1">1</button><button data-value="2">2</button><button data-value="3">3</button><button class="operator" data-value="-">−</button>
+        <button data-value="00">00</button><button data-value="0">0</button><button data-value=".">.</button><button class="operator" data-value="+">+</button>
+        <button class="equals" data-action="equals">=</button>
+      </div>
+      <footer>Keyboard supported · No expression evaluation via eval</footer>
+    </section>
+  </main>
+  <script>
+    const display = document.querySelector("#display");
+    const message = document.querySelector("#message");
+    const keypad = document.querySelector("#keypad");
+    let justCalculated = false;
 
-    <div class="container">
-        <div class="calcuter">
-            <form>
-                <div class="display">
-                    <input type="text" name="display">
-                </div>
-                <div>
-                    <input type="button" value="AC"onclick="display.value=''" class="oparetor">
-                    <input type="button" value="DE" onclick="display.value=display.value.toString().slice(0,-1)"class="oparetor">
-                    <input type="button" value="."onclick="display.value+='.'"class="oparetor">
-                    <input type="button" value="/"onclick="display.value+='/'"class="oparetor">
-                </div>
-                    <div>
-                    <input type="button" value="7" onclick="display.value +='7'">
-                    <input type="button" value="8"onclick="display.value +='8'">
-                    <input type="button" value="9"onclick="display.value +='9'">
-                    <input type="button" value="*"onclick="display.value +='*'">
-                </div>
-                    <div>
-                    <input type="button" value="4"onclick="display.value +='4'">
-                    <input type="button" value="5"onclick="display.value +='5'">
-                    <input type="button" value="6"onclick="display.value +='6'">
-                    <input type="button" value="-"onclick="display.value +='-'">
-                </div>
-                    <div>
-                    <input type="button" value="1"onclick="display.value +='1'">
-                    <input type="button" value="2"onclick="display.value +='2'">
-                    <input type="button" value="3"onclick="display.value +='3'">
-                    <input type="button" value="+"onclick="display.value +='+'">
-                </div>
-                    <div>
-                    <input type="button" value="00"onclick="display.value +='00'">
-                    <input type="button" value="0"onclick="display.value +='0'">
-                    <input type="button" value="="onclick="display.value = eval(display.value)" class="equl">
-                </div>
-            </form>
-        </div>
-    </div>
+    function tokenize(expression) {
+      const tokens = expression.match(/(?:\\d+\\.?\\d*|\\.\\d+)|[()+*/-]/g) || [];
+      if (tokens.join("") !== expression.replace(/\\s+/g, "")) throw new Error("Invalid character");
+      return tokens;
+    }
 
+    function calculate(expression) {
+      const tokens = tokenize(expression);
+      if (!tokens.length) throw new Error("Enter an expression");
+      let index = 0;
+      function factor() {
+        const token = tokens[index++];
+        if (token === "+") return factor();
+        if (token === "-") return -factor();
+        if (token === "(") {
+          const value = sum();
+          if (tokens[index++] !== ")") throw new Error("Missing closing bracket");
+          return value;
+        }
+        if (token === undefined || !/^\\d*\\.?\\d+$/.test(token)) throw new Error("Check your expression");
+        return Number(token);
+      }
+      function term() {
+        let value = factor();
+        while (tokens[index] === "*" || tokens[index] === "/") {
+          const operator = tokens[index++];
+          const right = factor();
+          if (operator === "/" && right === 0) throw new Error("Cannot divide by zero");
+          value = operator === "*" ? value * right : value / right;
+        }
+        return value;
+      }
+      function sum() {
+        let value = term();
+        while (tokens[index] === "+" || tokens[index] === "-") {
+          const operator = tokens[index++];
+          const right = term();
+          value = operator === "+" ? value + right : value - right;
+        }
+        return value;
+      }
+      const result = sum();
+      if (index !== tokens.length || !Number.isFinite(result)) throw new Error("Check your expression");
+      return Number.parseFloat(result.toPrecision(12)).toString();
+    }
+
+    function append(value) {
+      if (justCalculated && /[0-9.(]/.test(value)) display.value = "";
+      justCalculated = false;
+      display.value += value;
+      message.textContent = "Expression in progress.";
+    }
+    function runCalculation() {
+      try {
+        display.value = calculate(display.value);
+        message.textContent = "Calculation complete.";
+        justCalculated = true;
+      } catch (error) {
+        message.textContent = error.message || "Unable to calculate.";
+      }
+    }
+    keypad.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      if (button.dataset.value !== undefined) append(button.dataset.value);
+      if (button.dataset.action === "clear") {
+        display.value = ""; message.textContent = "Cleared."; justCalculated = false;
+      }
+      if (button.dataset.action === "delete") {
+        display.value = display.value.slice(0, -1); justCalculated = false;
+        message.textContent = "Last character removed.";
+      }
+      if (button.dataset.action === "equals") runCalculation();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (/^[0-9.+*/()\\-]$/.test(event.key)) { event.preventDefault(); append(event.key); }
+      else if (event.key === "Enter" || event.key === "=") { event.preventDefault(); runCalculation(); }
+      else if (event.key === "Backspace") { event.preventDefault(); display.value = display.value.slice(0, -1); }
+      else if (event.key === "Escape") { display.value = ""; message.textContent = "Cleared."; }
+    });
+  </script>
 </body>
-
 </html>
