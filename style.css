@@ -1,53 +1,23 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
-}
-
-.container {
-    width: 100%;
-    height: 100vh;
-    background: #e3f9ff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.calcuter{
-    background: #3a4452;
-    border-radius: 10px;
-    padding: 20px;
-}
-
-.calcuter form input{
-    border: 0;
-    outline: 0;
-    width: 60px;
-    height: 60px;
-    border-radius: 10px;
-    box-shadow: -8px -8px 15px rgba(255,255,255,0.1),5px 5px 15px rgba(0,0,0,0.2);
-    background: transparent;
-    font-size: 20px;
-    color: #fff;
-    cursor: pointer;
-    margin: 10px;
-}
-form .display{
-    display: flex;
-    justify-content: flex-end;
-    margin: 20px 0;
-}
-form .display input{
-    text-align: right;
-    flex: 1;
-    font-size:45px ;
-    box-shadow: none;
-}
-form input.equl{
-width: 145px;
-}
-
-form input.oparetor{
-    color: #33ffd8;
-}
+:root{color-scheme:dark;--bg:#101827;--panel:#182437;--line:#2a3a52;--text:#f5f7fb;--muted:#91a0b5;--accent:#8b7cff;--cyan:#69e0d0}
+*{box-sizing:border-box}
+body{margin:0;min-width:320px;min-height:100vh;font-family:Inter,system-ui,sans-serif;color:var(--text);background:radial-gradient(ellipse at 15% 10%,#26365b 0,transparent 42%),radial-gradient(ellipse at 90% 90%,#173b48 0,transparent 38%),var(--bg)}
+button{font:inherit}
+.container{min-height:100vh;display:grid;place-items:center;padding:24px}
+.calculator{width:min(100%,390px);padding:26px;border:1px solid #ffffff16;border-radius:24px;background:linear-gradient(145deg,#1b2940f5,#141f31f5);box-shadow:0 28px 80px #0007}
+.calculator-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.eyebrow{font-size:9px;letter-spacing:2px;font-weight:700;color:var(--cyan)}
+h1{font-size:22px;letter-spacing:-.7px;margin:7px 0 0}
+.status-dot{width:9px;height:9px;border-radius:50%;background:#5bdfaa;box-shadow:0 0 0 5px #5bdfaa20}
+.display-label{display:block;color:var(--muted);font-size:11px;margin-bottom:8px}
+.display{width:100%;height:76px;padding:12px 15px;border:1px solid var(--line);border-radius:13px;outline:none;background:#0c1523;color:#fff;text-align:right;font-size:30px;font-weight:600;letter-spacing:1px}
+.message{height:18px;margin:9px 2px 18px;color:var(--muted);font-size:10px}
+.keypad{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.keypad button{min-width:0;height:57px;border:1px solid #ffffff0c;border-radius:12px;background:#26364c;color:var(--text);font-size:17px;font-weight:600;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}
+.keypad button:hover{background:#344864;border-color:#ffffff2b}
+.keypad button:active{transform:scale(.96)}
+.keypad button.utility{background:#33415a;color:var(--cyan);font-size:12px}
+.keypad button.operator{background:#282a49;color:#b7adff}
+.keypad button.equals{grid-column:1/-1;height:53px;background:linear-gradient(100deg,#7768ed,#5d8de9);color:white;border:0;font-size:22px;box-shadow:0 8px 20px #7168ed30}
+footer{margin-top:20px;text-align:center;color:#718198;font-size:9px}
+@media(max-width:380px){.container{padding:12px}.calculator{padding:19px;border-radius:19px}.keypad{gap:8px}.keypad button{height:53px}.display{height:68px;font-size:26px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
